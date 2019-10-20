@@ -46,31 +46,39 @@ if __name__ == '__main__':
     print('INFO : It spend [%s] to download img' % end-start)
 '''
 
-def download_image(imgs=[], out=os.getcwd(), replace=False):
-    for i in imgs:
-        path, name = os.path.split(i)
-        tofile = '{path}{sep}{name}'.format(path=out, sep=os.sep, name=name)
-        print(tofile)
-        if not os.path.exists(tofile) or (os.path.exists(tofile) and replace):
-            print('downloading .... = [%s]' % tofile)
-            urllib2.urlretrieve(i, tofile)
-        else:
-            print('file exists!!!')
+def download_image(imgs=[], out=os.getcwd(), replace=False ,retry=2):
+    for i in range(1, 1+retry):
+        for i in imgs:
+            path, name = os.path.split(i)
+            tofile = '{path}{sep}{name}'.format(path=out, sep=os.sep, name=name)
+            print(tofile)
+            if not os.path.exists(tofile) or (os.path.exists(tofile) and replace):
+                print('downloading .... = [%s]' % tofile)
+                try:
+                    urllib2.urlretrieve(i, tofile)
+                except:
+                    print('fail to download from = [%s]' % i)
+            else:
+                print('file exists!!!')
 
-def findSubUrlWin4000(url, pattern):
+def findSubUrlWin4000(url, pattern, retry=2):
     urls = []
     root_url = url
     headers = {
     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
     }
 
-    req = requests.get(url=root_url, headers=headers)
-    html = req.text
-    pattern = re.compile(pattern)
-    urls = re.findall(pattern, html)
+    for i in range(1, 1+retry):
+        try:
+            req = requests.get(url=root_url, headers=headers)
+            html = req.text
+            pattern = re.compile(pattern)
+            urls = re.findall(pattern, html)
+        except:
+            if html:
+                print ('\r\n')
+                print (html)
 
-    #print ('\r\n')
-    #print (html)
     #print ('\r\n')
     #print (url)
     #print ('\r\n')
@@ -80,10 +88,10 @@ def findSubUrlWin4000(url, pattern):
     return urls
 
 
-def getImg():
+def getImg(url, out=os.getcwd(), replace=False):
     imglist = []
 
-    root_url = 'http://www.win4000.com/meitu.html'
+    root_url = url
     urls = findSubUrlWin4000(url=root_url, pattern=r'<a href="(http://www.win4000.com/meinv.+?.html)">')
 
     for url in urls:
@@ -93,25 +101,20 @@ def getImg():
         for sub_url in sub_urls:
             print('sub_url = [%s]' % sub_url)
             imgurl = findSubUrlWin4000(url=sub_url, pattern=r'<img class="pic-large" src=.* data-original=".+?" url="(.+?)"')
-            download_image(imgs=imgurl, out='D:\img', replace=False)
+            download_image(imgs=imgurl, out=out, replace=replace)
 
             for j in imgurl:
                 imglist.append(j)
 
         imgurl = findSubUrlWin4000(url=url, pattern=r'<img class="pic-large" src=.* data-original=".+?" url="(.+?)"')
-        download_image(imgs=imgurl, out='D:\img', replace=False)
+        download_image(imgs=imgurl, out=out, replace=False)
         for j in imgurl:
             imglist.append(j)
-
-
 
     print(imglist)
     print('total image # = [%s] downloaded' % len(imglist))
 
 
 if __name__ == '__main__':
-    getImg()
-
-
-
+    getImg(url=sys.argv[1], out=sys.argv[2])
 
