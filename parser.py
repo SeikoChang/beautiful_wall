@@ -47,8 +47,8 @@ if __name__ == '__main__':
 '''
 
 def download_image(imgs=[], out=os.getcwd(), replace=False ,retry=2):
-    for i in range(1, 1+retry):
-        for i in imgs:
+    for i in imgs:
+        for j in range(1, 1+retry):
             path, name = os.path.split(i)
             tofile = '{path}{sep}{name}'.format(path=out, sep=os.sep, name=name)
             print(tofile)
@@ -56,10 +56,12 @@ def download_image(imgs=[], out=os.getcwd(), replace=False ,retry=2):
                 print('downloading .... = [%s]' % tofile)
                 try:
                     urllib2.urlretrieve(i, tofile)
+                    break
                 except:
                     print('fail to download from = [%s]' % i)
             else:
                 print('file exists!!!')
+                break
 
 def findSubUrlWin4000(url, pattern, retry=2):
     urls = []
@@ -69,6 +71,7 @@ def findSubUrlWin4000(url, pattern, retry=2):
     }
 
     for i in range(1, 1+retry):
+        req = html =None
         try:
             req = requests.get(url=root_url, headers=headers)
             html = req.text
