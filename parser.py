@@ -23,7 +23,6 @@ def get_html(url):
 
     return None
 
-
 def save_image(img_url):
     ir = requests.get(img_url)
     if ir.status_code == 200:
@@ -90,8 +89,7 @@ def findSubUrlWin4000(url, pattern, retry=2):
 
     return urls
 
-
-def getImg(url, out=os.getcwd(), replace=False):
+def getImg(url='http://www.win4000.com/meitu.html', out=os.getcwd(), replace=False):
     imglist = []
 
     root_url = url
@@ -116,7 +114,6 @@ def getImg(url, out=os.getcwd(), replace=False):
 
     print(imglist)
     print('total image # = [%s] downloaded' % len(imglist))
-
 
 if __name__ == '__main__':
     getImg(url=sys.argv[1], out=sys.argv[2])
