@@ -49,7 +49,7 @@ def download_image(imgs=[], out=os.getcwd(), replace=False ,retry=2):
     for i in imgs:
         for j in range(1, 1+retry):
             path, name = os.path.split(i)
-            tofile = '{path}{sep}{name}'.format(path=out, sep=os.sep, name=name)
+            tofile = os.path.join(out, name)
             print(tofile)
             if not os.path.exists(tofile) or (os.path.exists(tofile) and replace):
                 print('downloading .... = [%s]' % tofile)
@@ -91,6 +91,9 @@ def findSubUrlWin4000(url, pattern, retry=2):
 
 def getImg(url='http://www.win4000.com/meitu.html', out=os.getcwd(), replace=False):
     imglist = []
+
+    if not os.path.exists(out):
+        os.makedirs(out)
 
     root_url = url
     urls = findSubUrlWin4000(url=root_url, pattern=r'<a href="(http://www.win4000.com/meinv.+?.html)">')
